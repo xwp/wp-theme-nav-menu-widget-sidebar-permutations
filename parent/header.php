@@ -20,14 +20,22 @@
 			<?php endif; ?>
 		</div><!-- .site-branding -->
 
-		<nav id="site-navigation" class="main-navigation" role="navigation">
+		<nav id="nav-menus" role="navigation">
 			<?php
-			wp_nav_menu( array(
-				'theme_location' => 'menu-1',
-				'menu_id' => 'primary-menu',
-			) );
+			foreach ( apply_filters( 'nmwsp_rendered_nav_menus', nmwsp_get_registered_nav_menu_locations() ) as $location => $name ) {
+				printf( '<h2>Menu: %s</h2>', esc_html( $name ) );
+				if ( has_nav_menu( $location ) ) {
+					wp_nav_menu( array(
+						'theme_location' => $location,
+						'menu_id' => $location . '-menu',
+						'fallback_cb' => false,
+					) );
+				} else {
+					echo "Nav menu $location unassigned.";
+				}
+			}
 			?>
-		</nav><!-- #site-navigation -->
+		</nav><!-- #nav-menus -->
 	</header><!-- #masthead -->
 
 	<div id="content" class="site-content">

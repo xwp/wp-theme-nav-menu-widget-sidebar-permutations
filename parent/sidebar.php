@@ -1,12 +1,11 @@
 <?php global $wp_registered_sidebars; ?>
 <?php
-$rendered_sidebars = apply_filters(
-	'nav_menu_widget_sidebar_permutations_rendered_sidebars',
-	array_fill_keys( nav_menu_widget_sidebar_permutations_get_registered_sidebar_ids(), true )
-);
+$rendered_sidebars = apply_filters( 'nmwsp_rendered_sidebars', nmwsp_get_registered_sidebars() );
 ?>
-<?php foreach ( array_keys( array_filter( $rendered_sidebars ) ) as $sidebar_id ) : ?>
-	<?php if ( is_active_sidebar( $sidebar_id ) ) : ?>
+<?php foreach ( array_keys( $rendered_sidebars ) as $sidebar_id ) : ?>
+	<?php if ( ! is_active_sidebar( $sidebar_id ) ) : ?>
+		<!-- <?php printf( 'Widget sidebar %s inactive', esc_html( $sidebar_id ) ); ?> -->
+	<?php else : ?>
 		<?php
 		$hex = substr( md5( $sidebar_id ), 0, 3 );
 		$background_color = sprintf( '#F%sF%sF%s', $hex[0], $hex[1], $hex[2] );
