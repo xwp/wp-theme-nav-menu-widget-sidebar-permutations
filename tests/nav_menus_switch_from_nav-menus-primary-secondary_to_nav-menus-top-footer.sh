@@ -44,5 +44,3 @@ if ! grep -q '"menu-secondary-container"><ul id="footer-menu"' "$output_file"; t
 fi
 
 echo "Tests pass"
-
-echo "Restoring DB from"
