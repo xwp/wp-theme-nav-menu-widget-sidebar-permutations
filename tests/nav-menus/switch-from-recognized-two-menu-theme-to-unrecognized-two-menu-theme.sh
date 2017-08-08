@@ -28,14 +28,12 @@ wp menu location assign $second_menu_id "secondary"
 before_switch_output=$( mktemp ).before-switch.html
 wget -O "$before_switch_output" "$url"
 
-wp theme activate nav-menu-widget-sidebar-permutations/nav-menus-top-footer
+wp theme activate nav-menu-widget-sidebar-permutations/nav-menus-aaa-bbb
 
 after_switch_output=$( mktemp ).after-switch.html
 wget -O "$after_switch_output" "$url"
 
-echo "Swap the nav menu location assignments to make sure the original theme cached nav_menu_locations theme mod is honored"
-wp menu location assign $first_menu_id "footer"
-wp menu location assign $second_menu_id "top"
+echo "Switch back to the original theme and ensure the original nav menus are intact"
 wp theme activate nav-menu-widget-sidebar-permutations/nav-menus-primary-secondary
 
 after_switch_back_output=$( mktemp ).after-switch-back.html
@@ -54,20 +52,22 @@ if ! grep -q '"menu-second-container"><ul id="secondary-menu"' "$before_switch_o
 	echo "🚫  Failed: before theme switch, second menu failed to get assigned to secondary location"
 	exit 1
 fi
-if ! grep -q '"menu-first-container"><ul id="top-menu"' "$after_switch_output"; then
-	echo "🚫  Failed: after theme switch, first menu failed to get assigned to primary location"
+
+if ! grep -q 'Nav menu aaa unassigned.' "$after_switch_output"; then
+	echo "🚫  Failed: after theme switch, expected aaa menu location to not be assigned"
 	exit 1
 fi
-if ! grep -q '"menu-second-container"><ul id="footer-menu"' "$after_switch_output"; then
-	echo "🚫  Failed: after theme switch, second menu failed to get assigned to secondary location"
+if ! grep -q 'Nav menu bbb unassigned.' "$after_switch_output"; then
+	echo "🚫  Failed: after theme switch, expected bbb menu location to not be assigned"
 	exit 1
 fi
-if ! grep -q '"menu-second-container"><ul id="primary-menu"' "$after_switch_back_output"; then
-	echo "🚫  Failed: after location re-assignment and theme switch back, second menu failed to get updated to be assigned to primary location"
+
+if ! grep -q '"menu-first-container"><ul id="primary-menu"' "$after_switch_back_output"; then
+	echo "🚫  Failed: after location re-assignment and theme switch back, first menu failed to get assigned to primary location"
 	exit 1
 fi
-if ! grep -q '"menu-first-container"><ul id="secondary-menu"' "$after_switch_back_output"; then
-	echo "🚫  Failed: after location re-assignment and theme switch back, first menu failed to get updated to be assigned to secondary location"
+if ! grep -q '"menu-second-container"><ul id="secondary-menu"' "$after_switch_back_output"; then
+	echo "🚫  Failed: after location re-assignment and theme switch back, second menu failed to get assigned to secondary location"
 	exit 1
 fi
 
