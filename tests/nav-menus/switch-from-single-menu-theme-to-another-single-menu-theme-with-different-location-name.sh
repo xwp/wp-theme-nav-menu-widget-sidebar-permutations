@@ -37,6 +37,7 @@ wp db import "$backup_file"
 wp cache flush
 
 echo "Running assertions:"
+set -x
 if ! grep -q 'class="menu-first-container"><ul id="aaa-menu"' "$before_switch_output"; then
 	echo "🚫  Failed: first menu was not assigned to the aaa location"
 	exit 1
@@ -45,5 +46,5 @@ if ! grep -q 'class="menu-first-container"><ul id="bbb-menu"' "$after_switch_out
 	echo "🚫  Failed: first menu was not assigned to the bbb location"
 	exit 1
 fi
-
+set +x
 echo "✅  Tests pass"

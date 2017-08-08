@@ -44,6 +44,7 @@ wp db import "$backup_file"
 wp cache flush
 
 echo "Running assertions:"
+set -x
 if ! grep -q '"menu-first-container"><ul id="primary-menu"' "$before_switch_output"; then
 	echo "🚫  Failed: before theme switch, first menu failed to get assigned to primary location"
 	exit 1
@@ -70,5 +71,6 @@ if ! grep -q '"menu-second-container"><ul id="secondary-menu"' "$after_switch_ba
 	echo "🚫  Failed: after location re-assignment and theme switch back, second menu failed to get assigned to secondary location"
 	exit 1
 fi
+set +x
 
 echo "✅  Tests pass"
