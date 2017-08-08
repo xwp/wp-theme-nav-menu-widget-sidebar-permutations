@@ -23,7 +23,7 @@ wp menu location assign $first_menu_id "aaa"
 
 second_menu_id=$(wp menu create "Unused" --porcelain)
 wp menu item add-custom $second_menu_id "Unused item" "http://example.com/secondary-item"
-
+exit
 before_switch_output=$( mktemp ).before-switch.html
 wget -O "$before_switch_output" "$url"
 
