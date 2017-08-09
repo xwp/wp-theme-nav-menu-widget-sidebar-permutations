@@ -1,5 +1,5 @@
 // jshint ignore: start
-// Load up the Customizer to switch themes in the context of a given changeset_uuid
+// Load up the themes admin screen to switch themes
 
 const args = require( 'minimist' )( process.argv.slice( 2 ) );
 
