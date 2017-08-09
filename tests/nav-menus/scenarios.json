@@ -1,4 +1,31 @@
 {
+  "switch-from-three-menu-theme-to-two-menu-theme-with-different-location-names": {
+    "from": "nav-menu-widget-sidebar-permutations/nav-menus-primary-secondary-social",
+    "to": "nav-menu-widget-sidebar-permutations/nav-menus-top-footer",
+    "nav_menu_locations_assigned": [ "social", "primary", "secondary" ],
+    "expected_switch_theme_mapping": {
+      "primary": "top",
+      "secondary": "footer"
+    }
+  },
+  "switch-from-three-menu-theme-without-primary-assigned-to-two-menu-theme-with-different-location-names": {
+    "from": "nav-menu-widget-sidebar-permutations/nav-menus-primary-secondary-social",
+    "to": "nav-menu-widget-sidebar-permutations/nav-menus-top-footer",
+    "nav_menu_locations_assigned": [ "social", "secondary" ],
+    "expected_switch_theme_mapping": {
+      "primary": null,
+      "secondary": "footer"
+    }
+  },
+  "switch-from-two-menu-theme-to-three-menu-theme-with-different-location-names": {
+    "from": "nav-menu-widget-sidebar-permutations/nav-menus-top-footer",
+    "to": "nav-menu-widget-sidebar-permutations/nav-menus-primary-secondary-social",
+    "nav_menu_locations_assigned": [ "top", "footer" ],
+    "expected_switch_theme_mapping": {
+      "top": "primary",
+      "footer": "secondary"
+    }
+  },
   "switch-from-recognized-two-menu-theme-to-unrecognized-two-menu-theme": {
     "from": "nav-menu-widget-sidebar-permutations/nav-menus-top-footer",
     "to": "nav-menu-widget-sidebar-permutations/nav-menus-aaa-bbb",
@@ -26,12 +53,12 @@
     }
   },
   "switch-from-two-menu-theme-to-another-two-menu-theme-with-different-location-names": {
-    "from": "nav-menu-widget-sidebar-permutations/nav-menus-primary-secondary",
-    "to": "nav-menu-widget-sidebar-permutations/nav-menus-top-footer",
-    "nav_menu_locations_assigned": [ "primary", "secondary" ],
+    "from": "nav-menu-widget-sidebar-permutations/nav-menus-top-footer",
+    "to": "nav-menu-widget-sidebar-permutations/nav-menus-primary-secondary",
+    "nav_menu_locations_assigned": [ "top", "footer" ],
     "expected_switch_theme_mapping": {
-      "primary": "top",
-      "secondary": "footer"
+      "top": "primary",
+      "footer": "secondary"
     }
   }
 }

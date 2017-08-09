@@ -4,6 +4,23 @@ namespace NMWSP;
 
 $scenarios = json_decode( file_get_contents( __DIR__ . '/scenarios.json' ), true );
 
+$recognized_methods = array( 'wp-cli', 'admin', 'customizer' );
+
+$methods = array();
+foreach ( $argv as $arg ) {
+	if ( preg_match( '/--methods?=(.+)/', $arg, $matches ) ) {
+		$methods = array_merge( $methods, explode( ',', $matches[1] ) );
+	}
+}
+$unrecognized_methods = array_diff( $methods, $recognized_methods );
+if ( ! empty( $unrecognized_methods ) ) {
+	fwrite( STDERR, sprintf( "Unrecognized methods: %s\n", implode( ', ', $unrecognized_methods ) ) );
+	exit( 1 );
+}
+if ( empty( $methods ) ) {
+	$methods = $recognized_methods;
+}
+
 const URL = 'http://src.wordpress-develop.dev';
 const ADMIN_USER = 'admin';
 const ADMIN_PASSWORD = 'admin';
@@ -88,6 +105,17 @@ try {
 		$initial_switch_uuid = null;
 		if ( 'wp-cli' === $method ) {
 			system( sprintf( 'wp theme activate %s', escapeshellarg( $scenario['to'] ) ) );
+		} elseif ( 'admin' === $method ) {
+			echo "Opening Admin in headless Chrome...\n";
+			system( sprintf(
+				'node %s --theme=%s --url=%s',
+				escapeshellarg( __DIR__ . '/switch-theme-via-admin.js' ),
+				escapeshellarg( $scenario['to'] ),
+				escapeshellarg( URL )
+			), $return_var );
+			if ( $return_var ) {
+				throw new Exception( 'Failed to switch theme.' );
+			}
 		} elseif ( 'customizer' === $method ) {
 			echo "Opening Customizer in headless Chrome...\n";
 			$initial_switch_uuid = strtolower( trim( exec( 'uuidgen' ) ) );
@@ -132,6 +160,17 @@ try {
 		$switch_back_uuid = null;
 		if ( 'wp-cli' === $method ) {
 			system( sprintf( 'wp theme activate %s', escapeshellarg( $scenario['from'] ) ) );
+		} elseif ( 'admin' === $method ) {
+			echo "Opening Admin in headless Chrome...\n";
+			system( sprintf(
+				'node %s --theme=%s --url=%s',
+				escapeshellarg( __DIR__ . '/switch-theme-via-admin.js' ),
+				escapeshellarg( $scenario['from'] ),
+				escapeshellarg( URL )
+			), $return_var );
+			if ( $return_var ) {
+				throw new Exception( 'Failed to switch theme.' );
+			}
 		} elseif ( 'customizer' === $method ) {
 			echo "Opening Customizer in headless Chrome...\n";
 			$switch_back_uuid = strtolower( trim( exec( 'uuidgen' ) ) );
@@ -157,15 +196,17 @@ try {
 
 	// Run the tests.
 	foreach ( $scenarios as $scenario_name => $scenario ) {
+		if ( '#' === substr( $scenario_name, 0, 1 ) ) {
+			continue;
+		}
+
 		echo "\n\n## $scenario_name\n";
 
-		echo "## Testing straight switch via WP-CLI:\n";
-		$location_menu_assignments = set_up_initial_state( $scenario );
-		test_switch_to_theme_and_back( $scenario, $location_menu_assignments, 'wp-cli' );
-
-		echo "## Testing switch via Customizer:\n";
-		$location_menu_assignments = set_up_initial_state( $scenario );
-		test_switch_to_theme_and_back( $scenario, $location_menu_assignments, 'customizer' );
+		foreach ( $methods as $method ) {
+			echo "\n### Testing straight switch via $method:\n";
+			$location_menu_assignments = set_up_initial_state( $scenario );
+			test_switch_to_theme_and_back( $scenario, $location_menu_assignments, $method );
+		}
 	}
 } catch ( Exception $e ) {
 	fwrite( STDERR, sprintf( "Error: %s\n", $e->getMessage() ) );
