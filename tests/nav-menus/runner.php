@@ -14,7 +14,7 @@ foreach ( $argv as $arg ) {
 }
 $unrecognized_methods = array_diff( $methods, $recognized_methods );
 if ( ! empty( $unrecognized_methods ) ) {
-	fwrite( STDERR, sprintf( "Unrecognized methods: %s\n", implode( ', ', $unrecognized_methods ) ) );
+	fwrite( STDERR, sprintf( "Error: Unrecognized method(s): %s\n", implode( ', ', $unrecognized_methods ) ) );
 	exit( 1 );
 }
 if ( empty( $methods ) ) {
@@ -55,9 +55,7 @@ try {
 		system( sprintf( 'wp theme activate %s', $scenario['from'] ) );
 
 		$menu_location_assignments = array();
-		$i                         = 0;
-		foreach ( $scenario['nav_menu_locations_assigned'] as $menu_location ) {
-			$i += 1;
+		foreach ( $scenario['nav_menu_locations_assigned'] as $i => $menu_location ) {
 			$menu_slug = "menu-$i";
 			$menu_id = exec( sprintf( 'wp menu create %s --porcelain', escapeshellarg( $menu_slug ) ) );
 			$menu_location_assignments[ $menu_id ] = $menu_location;
@@ -91,6 +89,49 @@ try {
 	};
 
 	/**
+	 * Switch to theme.
+	 *
+	 * @param string $theme  Theme to switch to.
+	 * @param string $method Method to use to switch.
+	 *
+	 * @throws Exception
+	 * @return array Result.
+	 */
+	function switch_to_theme( $theme, $method ) {
+		$result = array();
+		if ( 'wp-cli' === $method ) {
+			system( sprintf( 'wp theme activate %s', escapeshellarg( $theme ) ) );
+		} elseif ( 'admin' === $method ) {
+			echo "Opening Admin in headless Chrome...\n";
+			system( sprintf(
+				'node %s --theme=%s --url=%s',
+				escapeshellarg( __DIR__ . '/switch-theme-via-admin.js' ),
+				escapeshellarg( $theme ),
+				escapeshellarg( URL )
+			), $return_var );
+			if ( $return_var ) {
+				throw new Exception( 'Failed to switch theme.' );
+			}
+		} elseif ( 'customizer' === $method ) {
+			echo "Opening Customizer in headless Chrome...\n";
+			$result['changeset_uuid'] = strtolower( trim( exec( 'uuidgen' ) ) );
+			system( sprintf(
+				'node %s --theme=%s --changeset_uuid=%s --url=%s',
+				escapeshellarg( __DIR__ . '/switch-theme-via-customizer.js' ),
+				escapeshellarg( $theme ),
+				escapeshellarg( $result['changeset_uuid'] ),
+				escapeshellarg( URL )
+			), $return_var );
+			if ( $return_var ) {
+				throw new Exception( 'Failed to switch theme.' );
+			}
+		} else {
+			throw new Exception( "Unrecognized method: $method" );
+		}
+		return $result;
+	}
+
+	/**
 	 * Test switch to theme and back via WP-CLI.
 	 *
 	 * @param array  $scenario                  Test scenario.
@@ -102,34 +143,7 @@ try {
 	function test_switch_to_theme_and_back( $scenario, $location_menu_assignments, $method = 'wp-cli' ) {
 		$original_menus_before_switch = json_decode( exec( 'wp menu list --json' ), true );
 
-		$initial_switch_uuid = null;
-		if ( 'wp-cli' === $method ) {
-			system( sprintf( 'wp theme activate %s', escapeshellarg( $scenario['to'] ) ) );
-		} elseif ( 'admin' === $method ) {
-			echo "Opening Admin in headless Chrome...\n";
-			system( sprintf(
-				'node %s --theme=%s --url=%s',
-				escapeshellarg( __DIR__ . '/switch-theme-via-admin.js' ),
-				escapeshellarg( $scenario['to'] ),
-				escapeshellarg( URL )
-			), $return_var );
-			if ( $return_var ) {
-				throw new Exception( 'Failed to switch theme.' );
-			}
-		} elseif ( 'customizer' === $method ) {
-			echo "Opening Customizer in headless Chrome...\n";
-			$initial_switch_uuid = strtolower( trim( exec( 'uuidgen' ) ) );
-			system( sprintf(
-				'node %s --theme=%s --changeset_uuid=%s --url=%s',
-				escapeshellarg( __DIR__ . '/switch-theme-via-customizer.js' ),
-				escapeshellarg( $scenario['to'] ),
-				escapeshellarg( $initial_switch_uuid ),
-				escapeshellarg( URL )
-			), $return_var );
-			if ( $return_var ) {
-				throw new Exception( 'Failed to switch theme.' );
-			}
-		}
+		switch_to_theme( $scenario['to'], $method );
 
 		$menus = json_decode( exec( 'wp menu list --json' ), true );
 		$switched_menu_locations = array();
@@ -141,10 +155,10 @@ try {
 
 		$original_menu_locations = array_flip( $location_menu_assignments );
 
-		foreach ( $scenario['expected_switch_theme_mapping'] as $from_location => $to_location ) {
+		foreach ( $scenario['expected_location_mapping'] as $from_location => $to_location ) {
 			if ( is_null( $to_location ) ) {
 				if ( ! empty( $switched_menu_locations[ $to_location ] ) ) {
-					throw new Exception( "Expected $from_location to not have been mappped" );
+					throw new Exception( "Expected $from_location to not have been mapped" );
 				} else {
 					echo "PASS: $from_location did not get remapped\n";
 				}
@@ -157,34 +171,8 @@ try {
 			}
 		}
 
-		$switch_back_uuid = null;
-		if ( 'wp-cli' === $method ) {
-			system( sprintf( 'wp theme activate %s', escapeshellarg( $scenario['from'] ) ) );
-		} elseif ( 'admin' === $method ) {
-			echo "Opening Admin in headless Chrome...\n";
-			system( sprintf(
-				'node %s --theme=%s --url=%s',
-				escapeshellarg( __DIR__ . '/switch-theme-via-admin.js' ),
-				escapeshellarg( $scenario['from'] ),
-				escapeshellarg( URL )
-			), $return_var );
-			if ( $return_var ) {
-				throw new Exception( 'Failed to switch theme.' );
-			}
-		} elseif ( 'customizer' === $method ) {
-			echo "Opening Customizer in headless Chrome...\n";
-			$switch_back_uuid = strtolower( trim( exec( 'uuidgen' ) ) );
-			system( sprintf(
-				'node %s --theme=%s --changeset_uuid=%s --url=%s',
-				escapeshellarg( __DIR__ . '/switch-theme-via-customizer.js' ),
-				escapeshellarg( $scenario['from'] ),
-				escapeshellarg( $switch_back_uuid ),
-				escapeshellarg( URL )
-			), $return_var );
-			if ( $return_var ) {
-				throw new Exception( 'Failed to switch theme back.' );
-			}
-		}
+		echo "Attempting to switch back to previous theme...\n";
+		switch_to_theme( $scenario['from'], $method );
 
 		$original_menus_after_switch_back = json_decode( exec( 'wp menu list --json' ), true );
 		if ( $original_menus_before_switch !== $original_menus_after_switch_back ) {
@@ -203,7 +191,7 @@ try {
 		echo "\n\n## $scenario_name\n";
 
 		foreach ( $methods as $method ) {
-			echo "\n### Testing straight switch via $method:\n";
+			echo "\n### Testing switch via $method:\n";
 			$location_menu_assignments = set_up_initial_state( $scenario );
 			test_switch_to_theme_and_back( $scenario, $location_menu_assignments, $method );
 		}
@@ -215,5 +203,11 @@ try {
 	echo "\n";
 	system( sprintf( 'wp db import %s', escapeshellarg( $db_backup_file ) ) );
 	system( 'wp cache flush' );
+}
+
+if ( 0 === $exit_code ) {
+	echo "✅  PASS\n";
+} else {
+	echo "🚫  FAIL\n";
 }
 exit( $exit_code );
