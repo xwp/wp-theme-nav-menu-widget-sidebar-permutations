@@ -1,0 +1,27 @@
+{
+  "name": "nav-menu-widget-sidebar-permutations",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xwp/wp-theme-nav-menu-widget-sidebar-permutations.git"
+  },
+  "author": "",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/xwp/wp-theme-nav-menu-widget-sidebar-permutations/issues"
+  },
+  "homepage": "https://github.com/xwp/wp-theme-nav-menu-widget-sidebar-permutations#readme",
+  "dependencies": {
+    "chromedriver": "^2.31.0",
+    "minimalist": "^1.0.0",
+    "webdriverio": "^4.8.0"
+  }
+}
