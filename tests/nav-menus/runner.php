@@ -126,7 +126,7 @@ try {
 			echo "Opening Admin in headless Chrome...\n";
 			system( sprintf(
 				'node %s --theme=%s --url=%s',
-				escapeshellarg( __DIR__ . '/switch-theme-via-admin.js' ),
+				escapeshellarg( __DIR__ . '/../switch-theme-via-admin.js' ),
 				escapeshellarg( $theme ),
 				escapeshellarg( URL )
 			), $return_var );
@@ -138,7 +138,7 @@ try {
 			$result['changeset_uuid'] = strtolower( trim( exec( 'uuidgen' ) ) );
 			system( sprintf(
 				'node %s --theme=%s --changeset_uuid=%s --url=%s',
-				escapeshellarg( __DIR__ . '/switch-theme-via-customizer.js' ),
+				escapeshellarg( __DIR__ . '/../switch-theme-via-customizer.js' ),
 				escapeshellarg( $theme ),
 				escapeshellarg( $result['changeset_uuid'] ),
 				escapeshellarg( URL )
