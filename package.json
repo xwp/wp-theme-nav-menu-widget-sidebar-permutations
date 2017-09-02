@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/xwp/wp-theme-nav-menu-widget-sidebar-permutations#readme",
   "dependencies": {
-    "chromedriver": "^2.31.0",
+    "chromedriver": "^2.32.0",
     "minimalist": "^1.0.0",
     "webdriverio": "^4.8.0"
   }
