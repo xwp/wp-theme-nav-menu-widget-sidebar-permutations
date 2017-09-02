@@ -6,7 +6,7 @@
  * @return array Registered sidebars.
  */
 function nmwsp_get_registered_sidebars() {
-	$raw_sidebars = array_filter( apply_filters( 'nmwsp_registered_sidebars', array(
+	$raw_sidebars = array_filter( apply_filters( 'nmwsp_registered_widget_sidebars', array(
 		'sidebar-1' => true,
 	) ) );
 

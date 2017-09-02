@@ -1,6 +1,6 @@
 <?php global $wp_registered_sidebars; ?>
 <?php
-$rendered_sidebars = apply_filters( 'nmwsp_rendered_sidebars', nmwsp_get_registered_sidebars() );
+$rendered_sidebars = apply_filters( 'nmwsp_rendered_widget_sidebars', nmwsp_get_registered_sidebars() );
 ?>
 <?php foreach ( array_keys( $rendered_sidebars ) as $sidebar_id ) : ?>
 	<?php if ( ! is_active_sidebar( $sidebar_id ) ) : ?>

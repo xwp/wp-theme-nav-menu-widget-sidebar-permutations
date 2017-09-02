@@ -8,7 +8,7 @@ add_filter( 'nmwsp_registered_nav_menus', function () {
 	);
 } );
 
-add_filter( 'nmwsp_registered_sidebars', function () {
+add_filter( 'nmwsp_registered_widget_sidebars', function () {
 	return array(
 		'primary' => true,
 		'secondary' => true,
