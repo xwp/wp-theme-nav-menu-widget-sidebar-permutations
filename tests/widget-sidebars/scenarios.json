@@ -1,0 +1,46 @@
+{
+  "switch-from-theme-with-one-sidebar-to-another-theme-with-one-sidebar": {
+    "from": "nav-menu-widget-sidebar-permutations/sidebar-aaa",
+    "to": "nav-menu-widget-sidebar-permutations/sidebar-main",
+    "widget_sidebars_assigned": [ "aaa" ],
+    "expected_sidebar_mapping": {
+      "aaa": "main"
+    }
+  },
+  "switch-from-theme-with-one-sidebar-to-another-theme-with-two-sidebars": {
+    "from": "nav-menu-widget-sidebar-permutations/sidebar-main",
+    "to": "nav-menu-widget-sidebar-permutations/sidebars-primary-footer",
+    "widget_sidebars_assigned": [ "main" ],
+    "expected_sidebar_mapping": {
+      "main": "primary"
+    }
+  },
+  "switch-from-theme-with-two-sidebars-to-another-theme-with-three-sidebars-having-same-ids": {
+    "from": "nav-menu-widget-sidebar-permutations/sidebars-1-2",
+    "to": "nav-menu-widget-sidebar-permutations/sidebars-1-2-3",
+    "widget_sidebars_assigned": [ "sidebar-1", "sidebar-2" ],
+    "expected_sidebar_mapping": {
+      "sidebar-1": "sidebar-1",
+      "sidebar-2": "sidebar-2"
+    }
+  },
+  "switch-from-theme-with-two-sidebars-to-another-theme-with-two-sidebars": {
+    "from": "nav-menu-widget-sidebar-permutations/sidebars-1-2",
+    "to": "nav-menu-widget-sidebar-permutations/sidebars-primary-footer",
+    "widget_sidebars_assigned": [ "sidebar-1", "sidebar-2" ],
+    "expected_sidebar_mapping": {
+      "sidebar-1": "primary",
+      "sidebar-2": "footer"
+    }
+  },
+  "switch-from-theme-with-three-sidebars-to-another-theme-with-two-sidebars": {
+    "from": "nav-menu-widget-sidebar-permutations/sidebars-header-main-bottom",
+    "to": "nav-menu-widget-sidebar-permutations/sidebars-primary-footer",
+    "widget_sidebars_assigned": [ "header", "main", "bottom" ],
+    "expected_sidebar_mapping": {
+      "main": "primary",
+      "bottom": "footer",
+      "header": null
+    }
+  }
+}
